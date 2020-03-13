@@ -1,31 +1,33 @@
 package com.practice.poker.rules;
 
-import com.practice.poker.model.Card;
-import com.practice.poker.model.Combinations;
-import com.practice.poker.model.Hand;
-import com.practice.poker.model.Ranks;
+import com.practice.poker.model.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class StraightRule implements Rule {
     @Override
-    public boolean match(Hand hand) {
+    public Optional<HandRank> match(Hand hand) {
         List<Ranks> ranks = hand.getCards().stream().map(Card::getRank).collect(Collectors.toList());
         if (ranks.equals(Arrays.asList(Ranks.TWO, Ranks.THREE, Ranks.FOUR, Ranks.FIVE, Ranks.ACE))) {
-            return true;
+            return Optional.of(HandRank.builder().combination(getCombination()).highestRank(Ranks.FIVE).build());
         }
 
-        for (int i = 1; i < hand.getCards().size(); i++) {
-            Card current = hand.getCards().get(i);
-            Card previous = hand.getCards().get(i - 1);
-            if (current.getRank().getScore() - previous.getRank().getScore() != 1) {
-                return false;
+        for (int i = 1; i < ranks.size(); i++) {
+            Ranks current = ranks.get(i);
+            Ranks previous = ranks.get(i - 1);
+            if (current.getScore() - previous.getScore() != 1) {
+                return Optional.empty();
             }
         }
 
-        return true;
+        return Optional.of(HandRank.builder()
+                .combination(getCombination())
+                .highestRank(ranks.get(ranks.size() - 1))
+                .build()
+        );
     }
 
     @Override
