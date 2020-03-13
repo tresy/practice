@@ -1,6 +1,5 @@
 package com.practice.poker.engine;
 
-import com.practice.poker.model.Card;
 import com.practice.poker.model.Combinations;
 import com.practice.poker.model.Hand;
 import com.practice.poker.model.HandRank;
@@ -40,7 +39,7 @@ public class Evaluator {
             } else if (handRanks.stream().allMatch(handRank -> handRank.getCombination() == Combinations.STRAIGHT || handRank.getCombination() == Combinations.FLUSH)) {
                 return HandRank.builder()
                         .combination(Combinations.STRAIGHT_FLUSH)
-                        .highestRank(handRanks.get(0).getHighestRank())
+                        .highestRank(handRanks.stream().filter(handRank -> handRank.getCombination() == Combinations.STRAIGHT).findAny().map(HandRank::getHighestRank).orElse(null))
                         .build();
             }
         }
